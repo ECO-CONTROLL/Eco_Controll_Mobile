@@ -9,10 +9,9 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.rounded.AttachMoney
-import androidx.compose.material.icons.rounded.Bolt
-import androidx.compose.material.icons.rounded.ShowChart
 import androidx.compose.material.icons.rounded.WbSunny
+import androidx.compose.material.icons.filled.Bolt
+import androidx.compose.material.icons.filled.WbSunny
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -75,14 +74,20 @@ fun SolarHistoryScreen(onNavigateBack: () -> Unit) {
                 }
             }
 
-            // Grid de Métricas 2x2
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                MetricCard(title = "Geração Hoje", value = "12.5 kWh", icon = { Icon(Icons.Rounded.Bolt, contentDescription = null, tint = SolarOrange) }, modifier = Modifier.weight(1f))
-                MetricCard(title = "Geração Mensal", value = "375 kWh", icon = { Icon(Icons.Rounded.WbSunny, contentDescription = null, tint = SolarOrange) }, modifier = Modifier.weight(1f))
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                MetricCard(title = "Economia Gerada", value = "R$ 287,50", icon = { Icon(Icons.Rounded.AttachMoney, contentDescription = null, tint = PrimaryGreen) }, modifier = Modifier.weight(1f))
-                MetricCard(title = "Eficiência", value = "94%", icon = { Icon(Icons.Rounded.ShowChart, contentDescription = null, tint = WaterBlue) }, modifier = Modifier.weight(1f))
+            // Novos Cards de Energia
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                MetricCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Produção Total",
+                    value = "15.4 kWh",
+                    icon = { Icon(Icons.Default.Bolt, null, tint = SolarOrange) }
+                )
+                MetricCard(
+                    modifier = Modifier.weight(1f),
+                    title = "Geração do Dia",
+                    value = "4.2 kWh",
+                    icon = { Icon(Icons.Default.WbSunny, null, tint = SolarOrange) }
+                )
             }
 
             // Status das Placas Solares

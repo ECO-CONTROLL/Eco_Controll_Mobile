@@ -26,20 +26,20 @@ fun LoginScreen(onLoginClick: () -> Unit) {
     var password by remember { mutableStateOf("") }
 
     Column(modifier = Modifier.fillMaxSize().background(DarkBackground)) {
-        Box(modifier = Modifier.weight(0.6f).fillMaxWidth(), contentAlignment = Alignment.Center) {
+        Box(modifier = Modifier.weight(1.2f).fillMaxWidth(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(
                     painter = painterResource(id = R.drawable.logo),
                     contentDescription = null,
                     tint = Color.Unspecified,
-                    modifier = Modifier.size(100.dp)
+                    modifier = Modifier.size(120.dp)
                 )
                 Text(text = "Bem-vindo de volta!", color = Color.White.copy(alpha = 0.7f), fontSize = 16.sp)
             }
         }
 
         Card(
-            modifier = Modifier.fillMaxWidth().weight(2.4f),
+            modifier = Modifier.fillMaxWidth().weight(1.8f),
             shape = RoundedCornerShape(topStart = 32.dp, topEnd = 32.dp),
             colors = CardDefaults.cardColors(containerColor = Color.White)
         ){

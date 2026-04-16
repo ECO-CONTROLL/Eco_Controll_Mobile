@@ -21,10 +21,12 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.eco_controll_mobile.ui.theme.*
+import com.example.eco_controll_mobile.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -85,7 +87,14 @@ fun CisternHistoryScreen(onNavigateBack: () -> Unit) {
                 )
                 MetricCard(
                     title = "Consumo Diário", value = "285 L",
-                    icon = { Icon(Icons.Rounded.TrendingDown, contentDescription = null, tint = Color(0xFFE57373)) }, // Vermelho claro
+                    icon = { Icon(Icons.Rounded.TrendingDown, contentDescription = null, tint = Color(0xFFE57373)) },
+                    modifier = Modifier.weight(1f)
+                )
+                // Card de Consumo de Água Corrigido:
+                MetricCard(
+                    title = "Consumo Hoje",
+                    value = "120 L",
+                    icon = { Icon(painterResource(id = R.drawable.water), null, tint = WaterBlue) },
                     modifier = Modifier.weight(1f)
                 )
             }

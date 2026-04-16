@@ -35,66 +35,69 @@ fun HomeScreen(
 ) {
     Scaffold(
         containerColor = DarkBackground,
-        topBar = { TopBarProfile(onProfileClick = onNavigateToProfile) }
+        topBar = {
+            TopBarProfile(
+                onProfileClick = onNavigateToProfile,
+                onNotificationClick = { /* Ação de notificação no futuro */ }
+            )
+        }
     ) { paddingValues ->
-        // CORREÇÃO: Adicionado verticalScroll para permitir arrastar para baixo
+        // CORREÇÃO: Uma única Column abraçando toda a tela
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
                 .padding(horizontal = 16.dp)
-                .verticalScroll(rememberScrollState()), // Ativa o scroll
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(24.dp) // Espaçamento automático entre os blocos
         ) {
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Card Cisterna
-            ResourceCard(
-                title = "Cisterna",
-                value = "75%",
-                icon = { Icon(Icons.Rounded.WaterDrop, contentDescription = null, tint = WaterBlue) },
-                onInfoClick = onNavigateToHistoryCistern,
-                onManageClick = onNavigateToManageCistern
-            )
-
-            // Card Energia Solar
-            ResourceCard(
-                title = "Energia Solar",
-                value = "12.5 kWh",
-                icon = { Icon(Icons.Rounded.WbSunny, contentDescription = null, tint = SolarOrange) },
-                onInfoClick = onNavigateToHistorySolar,
-                onManageClick = onNavigateToManageSolar
-            )
-
-            Text("Acesso Rápido", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
-
-            // Linha de Atalhos (Acesso Rápido)
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
-                QuickAccessCard("Configurações", Icons.Default.Settings, Modifier.weight(1f), onClick = onNavigateToSettings)
-                QuickAccessCard("Relatórios", Icons.Default.Description, Modifier.weight(1f), onClick = onNavigateToReports)
-                QuickAccessCard("Perfil", Icons.Default.Person, Modifier.weight(1f), onClick = onNavigateToProfile)
+            // 1. CARDS DE CISTERNA E SOLAR PRIMEIRO
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                CisternCard(
+                    modifier = Modifier.weight(1f),
+                    onClick = onNavigateToHistoryCistern
+                )
+                SolarCard(
+                    modifier = Modifier.weight(1f),
+                    onClick = onNavigateToHistorySolar
+                )
             }
 
-            // Status do Sistema
-            SystemStatusCard()
+            // 2. CARDS DE ECONOMIA E CO2 EMBAIXO
+            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                EconomyCard(modifier = Modifier.weight(1f))
+                CO2Card(modifier = Modifier.weight(1f))
+            }
 
-            // CONTEÚDO EXTRA (Para testar o scroll)
-            Text("Dicas de Sustentabilidade", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+            // 3. ACESSO RÁPIDO
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Acesso Rápido", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp), modifier = Modifier.fillMaxWidth()) {
+                    QuickAccessCard("Configurações", Icons.Default.Settings, Modifier.weight(1f), onClick = onNavigateToSettings)
+                    QuickAccessCard("Relatórios", Icons.Default.Description, Modifier.weight(1f), onClick = onNavigateToReports)
+                    QuickAccessCard("Perfil", Icons.Default.Person, Modifier.weight(1f), onClick = onNavigateToProfile)
+                }
+            }
 
-            // Gerando cards aleatórios para provar que a tela rola
-            repeat(3) { index ->
-                Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = CardDefaults.cardColors(containerColor = CardBackground),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Icons.Default.Lightbulb, contentDescription = null, tint = PrimaryGreen)
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            "Dica #${index + 1}: Reduza o consumo de energia em horários de pico para aumentar sua economia.",
-                            color = TextSecondary, fontSize = 14.sp
-                        )
+            // 4. DICAS DE SUSTENTABILIDADE
+            Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                Text("Dicas de Sustentabilidade", color = TextPrimary, fontWeight = FontWeight.Bold, fontSize = 18.sp)
+                repeat(3) { index ->
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = CardDefaults.cardColors(containerColor = CardBackground),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Row(modifier = Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Lightbulb, contentDescription = null, tint = PrimaryGreen)
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                "Dica #${index + 1}: Reduza o consumo de energia em horários de pico para aumentar sua economia.",
+                                color = TextSecondary, fontSize = 14.sp
+                            )
+                        }
                     }
                 }
             }
@@ -105,11 +108,10 @@ fun HomeScreen(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBarProfile(onProfileClick: () -> Unit) {
+fun TopBarProfile(onProfileClick: () -> Unit, onNotificationClick: () -> Unit) {
     TopAppBar(
         colors = TopAppBarDefaults.topAppBarColors(containerColor = DarkBackground),
         title = {
-            // CENTRALIZADO
             Column(
                 modifier = Modifier.fillMaxWidth().clickable { onProfileClick() },
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -117,35 +119,23 @@ fun TopBarProfile(onProfileClick: () -> Unit) {
                 Box(modifier = Modifier.size(45.dp).clip(CircleShape).background(Color.Gray))
                 Text(text = "Lincoln", color = PrimaryGreen, fontWeight = FontWeight.Bold, fontSize = 18.sp)
             }
+        },
+        actions = {
+            IconButton(onClick = onNotificationClick) {
+                Icon(
+                    imageVector = Icons.Default.Notifications,
+                    contentDescription = "Notificações",
+                    tint = PrimaryGreen
+                )
+            }
         }
     )
 }
 
 @Composable
-fun ResourceCard(title: String, value: String, icon: @Composable () -> Unit, onInfoClick: () -> Unit, onManageClick: () -> Unit) {
-    Card(modifier = Modifier.fillMaxWidth(), shape = RoundedCornerShape(20.dp), colors = CardDefaults.cardColors(containerColor = CardBackground)) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(modifier = Modifier.size(50.dp).clip(RoundedCornerShape(12.dp)).background(DarkBackground), contentAlignment = Alignment.Center) { icon() }
-                    Spacer(modifier = Modifier.width(16.dp))
-                    Text(title, color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                }
-                Text(value, color = TextPrimary, fontSize = 24.sp, fontWeight = FontWeight.ExtraBold)
-            }
-            Spacer(modifier = Modifier.height(24.dp))
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                Button(onClick = onInfoClick, colors = ButtonDefaults.buttonColors(containerColor = TextSecondary.copy(alpha = 0.2f)), modifier = Modifier.weight(1f)) { Text("Histórico") }
-                Button(onClick = onManageClick, colors = ButtonDefaults.buttonColors(containerColor = PrimaryGreen), modifier = Modifier.weight(1f)) { Text("Gerenciar") }
-            }
-        }
-    }
-}
-
-@Composable
 fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector, modifier: Modifier, onClick: () -> Unit) {
     Card(
-        modifier = modifier.height(100.dp).clickable { onClick() }, // AQUI O CLIQUE FUNCIONA
+        modifier = modifier.height(100.dp).clickable { onClick() },
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(containerColor = CardBackground)
     ) {
@@ -157,26 +147,40 @@ fun QuickAccessCard(title: String, icon: androidx.compose.ui.graphics.vector.Ima
     }
 }
 
+// --- CRIADOS OS COMPONENTES PARA OS NOVOS CARDS ---
+
 @Composable
-fun SystemStatusCard() {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(containerColor = CardBackground) // MUDADO PARA PADRÃO
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Text("Status do Sistema", fontWeight = FontWeight.Bold, color = TextPrimary)
-            StatusRow("Última atualização", "Agora")
-            StatusRow("Economia do mês", "R$ 287,50", PrimaryGreen)
-            StatusRow("CO₂ evitado", "156 kg", PrimaryGreen)
-        }
-    }
+fun CisternCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    MiniResourceCard(title = "Cisterna", value = "80%", icon = Icons.Rounded.WaterDrop, iconTint = WaterBlue, modifier = modifier, onClick = onClick)
 }
 
 @Composable
-fun StatusRow(label: String, value: String, color: Color = Color.Black) {
-    Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-        Text(label, color = Color.Gray)
-        Text(value, color = color, fontWeight = FontWeight.Bold)
+fun SolarCard(modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    MiniResourceCard(title = "Solar", value = "4.2 kWh", icon = Icons.Rounded.WbSunny, iconTint = SolarOrange, modifier = modifier, onClick = onClick)
+}
+
+@Composable
+fun EconomyCard(modifier: Modifier = Modifier) {
+    MiniResourceCard(title = "Economia", value = "R$ 150", icon = Icons.Default.AttachMoney, iconTint = PrimaryGreen, modifier = modifier, onClick = {})
+}
+
+@Composable
+fun CO2Card(modifier: Modifier = Modifier) {
+    MiniResourceCard(title = "CO2 Salvo", value = "12 kg", icon = Icons.Default.Eco, iconTint = PrimaryGreen, modifier = modifier, onClick = {})
+}
+
+@Composable
+fun MiniResourceCard(title: String, value: String, icon: androidx.compose.ui.graphics.vector.ImageVector, iconTint: Color, modifier: Modifier = Modifier, onClick: () -> Unit) {
+    Card(
+        modifier = modifier.clickable { onClick() },
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = CardBackground)
+    ) {
+        Column(modifier = Modifier.padding(16.dp), horizontalAlignment = Alignment.Start) {
+            Icon(icon, contentDescription = null, tint = iconTint, modifier = Modifier.size(32.dp))
+            Spacer(modifier = Modifier.height(12.dp))
+            Text(title, color = TextSecondary, fontSize = 14.sp)
+            Text(value, color = TextPrimary, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+        }
     }
 }
