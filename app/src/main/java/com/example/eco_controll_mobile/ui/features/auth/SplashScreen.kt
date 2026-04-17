@@ -23,7 +23,7 @@ fun SplashScreen(onTimeout: () -> Unit) {
 
     // O LaunchedEffect inicia junto com a tela. O "delay" não trava o app.
     LaunchedEffect(key1 = true) {
-        delay(2000L) // Aguarda 2000 milissegundos (2 segundos)
+        delay(1500L) // Aguarda 1500 milissegundos (1.5 segundos)
         onTimeout()  // Aciona a função de navegação após o tempo
     }
 

@@ -25,10 +25,60 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.eco_controll_mobile.ui.theme.*
+// Imports de Estado (Para o remember, mutableStateOf e LaunchedEffect)
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.LaunchedEffect
+// Imports de Animação (Para o gráfico mexer)
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.material.icons.filled.Add
+
+//Movimento dos graficos
+@Composable
+fun AnimatedBarChartMock(modifier: Modifier = Modifier) {
+    // 1. Controle da Animação
+    var animationPlayed by remember { mutableStateOf(false) }
+    val progress by animateFloatAsState(
+        targetValue = if (animationPlayed) 1f else 0f,
+        animationSpec = tween(durationMillis = 1500), // As barras crescem em 1.5 segundos
+        label = "barAnimation"
+    )
+
+    LaunchedEffect(key1 = true) {
+        animationPlayed = true
+    }
+
+    // 2. Desenho das Barras
+    Canvas(modifier = modifier) {
+        val barWidth = 24.dp.toPx()
+        val spacing = (size.width - (barWidth * 7)) / 6 // 7 dias
+        val heights = listOf(0.6f, 0.75f, 0.8f, 0.7f, 0.85f, 0.8f, 0.75f) // Alturas relativas
+
+        heights.forEachIndexed { index, heightRatio ->
+            // Calcula a altura final e multiplica pelo "progress" (de 0.0 até 1.0)
+            val finalBarHeight = size.height * heightRatio
+            val animatedBarHeight = finalBarHeight * progress
+
+            val xOffset = index * (barWidth + spacing)
+            // O yOffset é calculado de cima para baixo. Diminuindo, a barra "gruda" no chão.
+            val yOffset = size.height - animatedBarHeight
+
+            drawRoundRect(
+                color = SolarOrange,
+                topLeft = Offset(xOffset, yOffset),
+                size = Size(barWidth, animatedBarHeight),
+                cornerRadius = CornerRadius(4.dp.toPx(), 4.dp.toPx())
+            )
+        }
+    }
+}
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SolarHistoryScreen(onNavigateBack: () -> Unit) {
+fun SolarHistoryScreen(onNavigateBack: () -> Unit, onNavigateToRegistration: () -> Unit) {
     Scaffold(
         containerColor = DarkBackground,
         topBar = {
@@ -39,6 +89,14 @@ fun SolarHistoryScreen(onNavigateBack: () -> Unit) {
                     IconButton(onClick = onNavigateBack) { Icon(Icons.Default.ArrowBack, contentDescription = "Voltar", tint = TextPrimary) }
                 }
             )
+        },
+        floatingActionButton = {
+            FloatingActionButton(
+                onClick = onNavigateToRegistration,
+                containerColor = SolarOrange // Usando a cor Solar!
+            ) {
+                Icon(Icons.Default.Add, contentDescription = "Adicionar Placa", tint = Color.White)
+            }
         }
     ) { paddingValues ->
         Column(
@@ -70,7 +128,7 @@ fun SolarHistoryScreen(onNavigateBack: () -> Unit) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text("Geração de Energia - Última Semana", color = DarkBackground, fontWeight = FontWeight.Bold)
                     Spacer(modifier = Modifier.height(16.dp))
-                    SimpleBarChartMock(modifier = Modifier.fillMaxSize())
+                    AnimatedBarChartMock(modifier = Modifier.fillMaxSize())
                 }
             }
 

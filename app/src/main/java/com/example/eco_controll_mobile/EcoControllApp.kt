@@ -9,6 +9,8 @@ import com.example.eco_controll_mobile.ui.features.auth.SplashScreen
 import com.example.eco_controll_mobile.ui.features.dashboard.HomeScreen
 import com.example.eco_controll_mobile.ui.features.profile.SettingsScreen
 import com.example.eco_controll_mobile.ui.features.profile.UserProfileScreen
+import com.example.eco_controll_mobile.ui.features.registration.CisternRegistrationScreen
+import com.example.eco_controll_mobile.ui.features.registration.SolarRegistrationScreen
 import com.example.eco_controll_mobile.ui.features.reports.ReportsScreen
 import com.example.eco_controll_mobile.ui.features.resources.CisternHistoryScreen
 import com.example.eco_controll_mobile.ui.features.resources.ManageCisternScreen
@@ -45,9 +47,33 @@ fun EcoControllApp() {
 
         // Rotas com botão de voltar funcionando
         composable("manage_cistern") { ManageCisternScreen { navController.popBackStack() } }
-        composable("history_cistern") { CisternHistoryScreen { navController.popBackStack() } }
+
+        // 1. Rota da Cisterna (Leva para o cadastro da Cisterna)
+        composable(route = "history_cistern") {
+            CisternHistoryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToRegistration = { navController.navigate("register_cistern") }
+            )
+        }
+
         composable("manage_solar") { ManageSolarScreen { navController.popBackStack() } }
-        composable("history_solar") { SolarHistoryScreen { navController.popBackStack() } }
+
+        // 2. Rota do Solar (Leva para o cadastro do Solar)
+        composable(route = "history_solar") {
+            SolarHistoryScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToRegistration = { navController.navigate("register_solar") }
+            )
+        }
+
+        // 3. Telas de Cadastro Independentes
+        composable(route = "register_cistern") {
+            CisternRegistrationScreen(onBackClick = { navController.popBackStack() })
+        }
+
+        composable(route = "register_solar") {
+            SolarRegistrationScreen(onBackClick = { navController.popBackStack() })
+        }
         composable("settings") { SettingsScreen { navController.popBackStack() } }
         composable("profile") { UserProfileScreen { navController.popBackStack() } }
         composable("reports") { ReportsScreen { navController.popBackStack() } }

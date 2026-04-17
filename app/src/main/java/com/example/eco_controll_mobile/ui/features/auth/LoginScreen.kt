@@ -18,6 +18,9 @@ import com.example.eco_controll_mobile.ui.components.EcoTextField
 import com.example.eco_controll_mobile.ui.theme.DarkBackground
 import com.example.eco_controll_mobile.ui.theme.PrimaryGreen
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import com.example.eco_controll_mobile.R
 
 @Composable
@@ -88,16 +91,20 @@ fun LoginScreen(onLoginClick: () -> Unit) {
                     Text("Entrar", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
                 }
 
-                // O SEGREDO ESTÁ AQUI: Essa mola empurra o "Criar conta" para o rodapé
-                Spacer(modifier = Modifier.weight(1f))
+                Spacer(modifier = Modifier.height(8.dp))
 
                 // Criar conta (Sempre visível no fundo do card)
-                TextButton(
-                    onClick = { /* Navegar para cadastro */ },
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
-                ) {
-                    Text("Não tem uma conta? ", color = Color.Gray)
-                    Text("Criar conta", color = Color(0xFF5D88A5), fontWeight = FontWeight.Bold)
+                TextButton(onClick = { /* Navegar para cadastro */ }) {
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(style = SpanStyle(color = PrimaryGreen)) {
+                                append("Ainda não tem conta? ")
+                            }
+                            withStyle(style = SpanStyle(color = Color(0xFF5D88A5))) {
+                                append("Cadastre-se!")
+                            }
+                        }
+                    )
                 }
             }
         }
